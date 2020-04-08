@@ -17,13 +17,21 @@ app.use(bodyParser.json());
 app.use(require("./routes/user"));
 
 // Connect to db
-mongoose.connect("mongodb://localhost:27017/cafe", (err, res) => {
-  if (err) {
-    throw err;
-  } else {
-    console.log("Base de datos ONLINE");
+console.log(process.env.URLDB);
+mongoose.connect(
+  process.env.URLDB,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err, res) => {
+    if (err) {
+      throw err;
+    } else {
+      console.log("Base de datons ONLINE");
+    }
   }
-});
+);
 
 // Start Server
 app.listen(port, () => {
