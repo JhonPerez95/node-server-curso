@@ -1,13 +1,20 @@
 const express = require("express");
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
+
+const User = require("../models/user");
+const { verificaToken, verificaRoleAdmin } = require("../middlewares/authe");
+
 const app = express();
 
-app.get("/user", (req, res) => {
+app.get("/user", verificaToken, (req, res) => {
+  // return res.json({
+  //   Usuario: req.user,
+  //   Nombre: req.user.name,
+  //   Email: req.user.email,
+  // });
   let desde = Number(req.query.desde || 0);
   let limit = Number(req.query.limit || 5);
-
   User.find({ status: true }, "name email role status google img")
     .limit(limit)
     .skip(desde)
@@ -18,7 +25,7 @@ app.get("/user", (req, res) => {
           err,
         });
       }
-      User.count({ status: true }, (err, conteo) => {
+      User.countDocuments({ status: true }, (err, conteo) => {
         res.json({
           ok: true,
           users,
@@ -28,7 +35,7 @@ app.get("/user", (req, res) => {
     });
 });
 
-app.post("/user", (req, res) => {
+app.post("/user", [verificaToken, verificaRoleAdmin], (req, res) => {
   let body = req.body;
 
   let user = new User({
@@ -52,10 +59,10 @@ app.post("/user", (req, res) => {
   });
 });
 
-app.put("/user/:id", (req, res) => {
+app.put("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
   let id = req.params.id;
 
-  let body = _.pick(req.body, ["name", "email", "img", "role", "status"]);
+  let body = _.pick(req.body, ["name", "email", , "role", "status"]);
   let options = {
     new: true,
     runValidators: true,
@@ -64,19 +71,20 @@ app.put("/user/:id", (req, res) => {
   User.findByIdAndUpdate(id, body, options, (err, userDB) => {
     if (err) {
       return res.status(400).json({
+        mensaje: "No se pudo actualizar",
         ok: false,
         err,
       });
     }
-
     res.json({
+      message: "se actualizo satisfactoriamente",
       ok: true,
       user: userDB,
     });
   });
 });
 
-app.delete("/user/:id", (req, res) => {
+app.delete("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
   let id = req.params.id;
   let status = {
     status: false,
