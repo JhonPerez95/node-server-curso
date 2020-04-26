@@ -2,10 +2,9 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const path = require("path");
-const app = express();
 
+const app = express();
 // // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -16,25 +15,10 @@ app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, "../public")));
 
 // Configuracion rutas globales
-// app.use(routes);
 app.use(require("./routes/index"));
 
 // Connect to db
-mongoose.connect(
-  process.env.MONGO_URI,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  },
-  (err, res) => {
-    if (err) {
-      throw err;
-    } else {
-      console.log("Base de datons ONLINE");
-    }
-  }
-);
+require("./database");
 
 // Start Server
 port = process.env.PORT;

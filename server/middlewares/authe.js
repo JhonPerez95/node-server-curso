@@ -33,6 +33,7 @@ let verificaRoleAdmin = (req, res, next) => {
     });
   }
 };
+
 module.exports = {
   verificaToken,
   verificaRoleAdmin,

@@ -8,15 +8,10 @@ const { verificaToken, verificaRoleAdmin } = require("../middlewares/authe");
 const app = express();
 
 app.get("/user", verificaToken, (req, res) => {
-  // return res.json({
-  //   Usuario: req.user,
-  //   Nombre: req.user.name,
-  //   Email: req.user.email,
-  // });
   let desde = Number(req.query.desde || 0);
-  let limit = Number(req.query.limit || 5);
+  let limite = Number(req.query.limit || 5);
   User.find({ status: true }, "name email role status google img")
-    .limit(limit)
+    .limit(limite)
     .skip(desde)
     .exec((err, users) => {
       if (err) {
@@ -45,19 +40,35 @@ app.post("/user", [verificaToken, verificaRoleAdmin], (req, res) => {
     role: body.role,
   });
 
-  user.save((err, userDB) => {
-    if (err) {
+  // user.save((err, userDB) => {
+  //   if (err) {
+  //     return res.status(400).json({
+  //       ok: false,
+  //       err,
+  //     });
+  //   }
+  //   res.json({
+  //     ok: true,
+  //     user: userDB,
+  //   });
+  // });
+
+  user
+    .save()
+    .then((userDB) => {
+      res.json({
+        ok: true,
+        user: userDB,
+      });
+    })
+    .catch((err) => {
       return res.status(400).json({
         ok: false,
         err,
       });
-    }
-    res.json({
-      ok: true,
-      user: userDB,
     });
-  });
 });
+//
 
 app.put("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
   let id = req.params.id;
@@ -82,6 +93,21 @@ app.put("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
       user: userDB,
     });
   });
+  // User.findByIdAndUpdate(id, body, options)
+  //   .then((userDB) =>
+  //     res.json({
+  //       message: "se actualizo satisfactoriamente",
+  //       ok: true,
+  //       user: userDB,
+  //     })
+  //   )
+  //   .catch((err) =>
+  //     res.status(400).json({
+  //       mensaje: "No se pudo actualizar",
+  //       ok: false,
+  //       err,
+  //     })
+  //   );
 });
 
 app.delete("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
@@ -99,7 +125,7 @@ app.delete("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
         err,
       });
     }
-    if (userDelete === null) {
+    if (!userDelete) {
       return res.status(400).json({
         ok: false,
         err: {
@@ -109,6 +135,7 @@ app.delete("/user/:id", [verificaToken, verificaRoleAdmin], (req, res) => {
     }
     res.json({
       ok: true,
+      message: "Este usuario a sido eliminado correctamente",
       usuario: userDelete,
     });
   });
