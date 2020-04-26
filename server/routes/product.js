@@ -4,10 +4,6 @@ const Product = require("../models/product");
 const { verificaToken } = require("../middlewares/authe");
 const app = express();
 
-// const { renderProduct } = require("../controller/product.controller");
-
-// router.get("/product", verificaToken, renderProduct);
-
 app.get("/product/", verificaToken, (req, res) => {
   let desde = Number(req.query.desde || 0);
   let limite = Number(req.query.limite || 5);
