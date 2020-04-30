@@ -1,5 +1,5 @@
 # node-server-curso
-API REST basica de un cafe , en donde se valida los rol de los users por token
+API REST basica de un cafe , en donde se valida los roll de los users por token
 
 Iniciar:
 $ npm install 
